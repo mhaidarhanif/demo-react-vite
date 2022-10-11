@@ -1,13 +1,21 @@
+import useSWR from "swr";
 import type { Post, Posts } from "../types/post";
 
-export interface PostsProps {
-  posts: Posts;
-}
+// @ts-ignore
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-export function ExamplePosts({ posts }: PostsProps) {
+export function ExamplePosts() {
+  const { data, error } = useSWR<Posts>(
+    "https://jsonplaceholder.typicode.com/posts",
+    fetcher
+  );
+
+  if (error) return <div>Failed to load</div>;
+  if (!data) return <div>Loading...</div>;
+
   return (
     <div>
-      {posts
+      {data
         .filter((post) => {
           return post.id <= 5;
         })
